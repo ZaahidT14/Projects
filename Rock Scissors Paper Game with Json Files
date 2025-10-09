@@ -1,0 +1,71 @@
+import random
+import json
+
+def lastplayerStats(path="Game_stats.json"):
+    try:
+        with open(path, 'r') as file:
+            last = json.load(file)
+            print(f"Last Player: {last['player']}, Games:{last['games']}, W-D-L: {last['wins']} {last['draws']} {last['losses']}")
+    except FileNotFoundError: 
+        print("no previous results found")
+        return None
+    
+def winner_chooser(user_choice, computer_choice):
+    outcomes = {
+        "Rock":     {"Rock": "draw", "Paper": "lose", "Scissors": "win"},
+        "Paper":    {"Rock": "win",  "Paper": "draw", "Scissors": "lose"},
+        "Scissors": {"Rock": "lose", "Paper": "win",  "Scissors": "draw"},
+    }
+    return outcomes[user_choice][computer_choice]    
+    
+lastplayerStats()    
+    
+user_name = input("What is your name? ")
+
+#saving stats 
+stats = {"player": user_name, "games": 0, "wins": 0, "draws": 0, "losses": 0}
+
+##choice options
+choices = {
+    "R": "Rock",
+    "P": "Paper",
+    "S": "Scissors"
+}
+
+while True:
+
+## validating user choice
+    while True:
+        user_input = input("what do you choose? Type R for Rock, P for Paper and S for Scissors (Q to Quit) ").upper()
+
+        if user_input == "Q":
+            with open("Game_stats.json", "w") as file:
+                json.dump(stats, file, indent=4) 
+
+            print(f"Last Player: {stats['player']}, Games:{stats['games']}, W-D-L: {stats['wins']} {stats['draws']} {stats['losses']}")
+            exit()   
+
+        if user_input in choices:
+            user_choice = choices[user_input]
+            print(f"You chose: {user_choice}") 
+            break
+        else:
+            print("Invalid input! Please try again.")    
+
+    computer_choice = random.choice(list(choices.values()))
+    print(f"computer chose: {computer_choice}")
+
+#outcome of game
+
+    result = winner_chooser(user_choice, computer_choice)
+    if result == "draw":
+        print("It's a draw!\n")
+        stats["draws"] += 1
+    elif result == "win":
+        print("You win!\n")
+        stats["wins"] += 1
+    else:
+        print("You lose!\n")
+        stats["losses"] += 1
+
+    stats["games"] += 1
